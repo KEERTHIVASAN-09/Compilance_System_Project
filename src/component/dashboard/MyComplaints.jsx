@@ -55,6 +55,16 @@ function MyComplaints({ user, onViewDetails }) {
     return `CMP-${id.slice(-6).toUpperCase()}`;
   };
 
+  const normalizeLabel = (label) => {
+    if (!label) return '';
+    // Strip leading bullets, punctuation, and excess whitespace
+    return label
+      .toString()
+      .replace(/^[^\p{L}\p{N}]+/u, '')
+      .replace(/[•·–—]+/g, ' ')
+      .trim();
+  };
+
   const getStatusColor = (status) => {
     switch(status) {
       case 'Pending': return '#fab1a0';
@@ -199,9 +209,9 @@ function MyComplaints({ user, onViewDetails }) {
 
               <div className="complaint-card-footer">
                 <div className="complaint-meta">
-                  <span className="category-badge">{complaint.category}</span>
+                  <span className="category-badge">{normalizeLabel(complaint.category)}</span>
                   <span className={`priority-small priority-${complaint.priority.toLowerCase()}`}>
-                    {complaint.priority} Priority
+                    {normalizeLabel(complaint.priority)} Priority
                   </span>
                 </div>
                 {(() => {

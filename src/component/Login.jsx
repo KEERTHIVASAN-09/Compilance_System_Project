@@ -8,6 +8,9 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
+  const [blockedInfo, setBlockedInfo] = useState(null);
+  const [unblockReason, setUnblockReason] = useState("");
+  const [requestingUnblock, setRequestingUnblock] = useState(false);
 
   const handleLogin = async () => {
     
@@ -41,6 +44,12 @@ function Login() {
       const data = await res.json();
 
       if (!res.ok) {
+        // If account is blocked, allow user to submit an unblock request
+        if (res.status === 403 && data && data.isBlocked) {
+          setBlockedInfo({ userId: data.userId, reason: data.blockedReason || "" });
+          return;
+        }
+
         alert(data.message || "Login failed");
         return;
       }
@@ -66,6 +75,33 @@ function Login() {
       alert("Server error. Please try again later.");
     }
   };
+
+    const handleRequestUnblock = async () => {
+      if (!blockedInfo || !blockedInfo.userId) return alert('Invalid unblock request');
+      if (!unblockReason.trim()) return alert('Please provide a reason');
+
+      setRequestingUnblock(true);
+      try {
+        const res = await fetch('http://localhost:5000/api/block-requests/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: blockedInfo.userId, reason: unblockReason.trim() })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('Unblock request submitted. Admin will review it.');
+          setBlockedInfo(null);
+          setUnblockReason('');
+        } else {
+          alert(data.message || 'Failed to submit unblock request');
+        }
+      } catch (error) {
+        console.error('Unblock request error:', error);
+        alert('Server error. Please try again later.');
+      } finally {
+        setRequestingUnblock(false);
+      }
+    };
 
   return (
     <div className="auth-page">
@@ -98,6 +134,24 @@ function Login() {
         />
 
         <button onClick={handleLogin}>Login</button>
+
+        {blockedInfo && (
+          <div style={{marginTop: '16px', padding: '12px', border: '1px solid #f5c6cb', background: '#fff5f5'}}>
+            <h4 style={{margin: '0 0 8px 0'}}>Your account is blocked</h4>
+            <p style={{margin: '0 0 8px 0', color: '#721c24'}}>Reason: {blockedInfo.reason || 'No reason provided by admin'}</p>
+            <label>Request Unblock (optional message)</label>
+            <textarea
+              value={unblockReason}
+              onChange={e => setUnblockReason(e.target.value)}
+              rows={3}
+              placeholder="Explain why you should be unblocked..."
+              style={{width: '100%', marginBottom: '8px'}}
+            />
+            <button onClick={handleRequestUnblock} disabled={requestingUnblock} style={{marginRight: '8px'}}>
+              {requestingUnblock ? 'Submitting...' : 'Request Unblock'}
+            </button>
+          </div>
+        )}
 
         <div className="auth-footer">
           Don’t have an account? <Link to="/signup">Register</Link>

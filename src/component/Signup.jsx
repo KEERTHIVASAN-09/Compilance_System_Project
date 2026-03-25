@@ -7,6 +7,7 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
+  const [resolverRole, setResolverRole] = useState("");
 
   const handleRegister = async () => {
     // Trim inputs
@@ -17,6 +18,12 @@ function Signup() {
 
     if (!trimmedName || !trimmedEmail || !trimmedPassword || !trimmedRole) {
       alert("Please fill all fields");
+      return;
+    }
+
+    // If registering as a resolver, require a resolver role/specialty
+    if (trimmedRole.toLowerCase() === 'resolver' && !resolverRole.trim()) {
+      alert("Please select a resolver role/specialty");
       return;
     }
 
@@ -41,7 +48,8 @@ function Signup() {
           name: trimmedName, 
           email: trimmedEmail, 
           password: trimmedPassword, 
-          role: trimmedRole 
+          role: trimmedRole,
+          resolverRole: resolverRole.trim() || null
         })
       });
 
@@ -54,6 +62,7 @@ function Signup() {
         setEmail("");
         setPassword("");
         setRole("");
+        setResolverRole("");
         // Redirect to login
         window.location.href = "/login";
       } else {
@@ -78,7 +87,23 @@ function Signup() {
           <option value="">Select Role</option>
           <option value="user">User</option>
           <option value="resolver">Resolver</option>
+          <option value="admin">Admin</option>
         </select>
+
+        {role === 'resolver' && (
+          <>
+            <label>Resolver Role / Specialty</label>
+            <select value={resolverRole} onChange={e => setResolverRole(e.target.value)}>
+              <option value="">Select Resolver Role</option>
+              <option value="Internet">Internet</option>
+              <option value="Water">Water</option>
+              <option value="Power">Power</option>
+              <option value="Gas">Gas</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Other">Other</option>
+            </select>
+          </>
+        )}
 
         <label>Full Name</label>
         <input

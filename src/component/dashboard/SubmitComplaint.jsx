@@ -8,11 +8,12 @@ function SubmitComplaint({ user, onComplaintSubmitted }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!title || !description || !category) {
-      setMessage("Please fill all fields");
+      setMessage("Please fill all required fields");
       return;
     }
 
@@ -39,6 +40,7 @@ function SubmitComplaint({ user, onComplaintSubmitted }) {
         setDescription("");
         setCategory("");
         setPriority("Medium");
+        // no resolver selected by user; complaint will be unassigned for admin to assign
 
         // Call parent function to refresh dashboard
         if (onComplaintSubmitted) {
@@ -138,6 +140,12 @@ function SubmitComplaint({ user, onComplaintSubmitted }) {
               <option value="Medium">Medium</option>
               <option value="High">High</option>
             </select>
+          </div>
+
+          <div className="form-group">
+            <p style={{fontSize: '0.95em', color: '#666'}}>
+              Your complaint will be submitted to the admin team. Admins will review and assign a resolver if needed.
+            </p>
           </div>
 
           {message && (

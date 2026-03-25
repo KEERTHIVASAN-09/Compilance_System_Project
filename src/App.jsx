@@ -3,6 +3,7 @@ import Login from "./component/Login";
 import Signup from "./component/Signup";
 import UserDashboard from "./component/dashboard/UserDashboard";
 import ResolverDashboard from "./component/resolverdash/ResolverDashboard";
+import AdminDashboard from "./component/admindash/AdminDashboard";
 
 function App() {
   return (
@@ -17,6 +18,9 @@ function App() {
 
         {/* RESOLVER DASHBOARD */}
         <Route path="/resolver-dashboard" element={<ResolverDashboard />} />
+
+        {/* ADMIN DASHBOARD */}
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   );

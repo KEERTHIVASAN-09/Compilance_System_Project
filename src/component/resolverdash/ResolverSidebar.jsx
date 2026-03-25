@@ -47,7 +47,9 @@ function ResolverSidebar({ user, onMenuChange }) {
         {user.photo ? (
           <img src={user.photo} alt="Profile" className="avatar-photo" />
         ) : (
-          <div className="avatar">🔧</div>
+          <div className="avatar">
+            {user.name ? user.name.charAt(0).toUpperCase() : ''}
+          </div>
         )}
         <h3>Welcome,</h3>
         <p>{user.name}</p>
@@ -59,13 +61,13 @@ function ResolverSidebar({ user, onMenuChange }) {
           className={activeMenu === "dashboard" ? "active" : ""} 
           onClick={() => handleMenuClick("dashboard")}
         >
-          <span className="menu-icon">▪</span>Dashboard
+          Dashboard
         </li>
         <li 
           className={activeMenu === "assigned" ? "active" : ""} 
           onClick={() => handleMenuClick("assigned")}
         >
-          <span className="menu-icon">▪</span>Assigned Complaints
+          Assigned Complaints
           {assignedCount > 0 && (
             <span className="notification-badge">{assignedCount}</span>
           )}
@@ -74,7 +76,7 @@ function ResolverSidebar({ user, onMenuChange }) {
           className={activeMenu === "settings" ? "active" : ""} 
           onClick={() => handleMenuClick("settings")}
         >
-          <span className="menu-icon">▪</span>Settings
+          Settings
         </li>
       </ul>
 

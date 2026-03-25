@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function ResolverSettings({ user, onSettingsUpdate }) {
+function AdminSettings({ user, onSettingsUpdate }) {
   const [activeTab, setActiveTab] = useState("profile");
   const [formData, setFormData] = useState({
     name: user.name || "",
@@ -75,7 +75,6 @@ function ResolverSettings({ user, onSettingsUpdate }) {
     }
     setLoading(true);
     try {
-      // attempt to call password change endpoint (adjust backend route if different)
       const res = await fetch(`http://localhost:5000/api/users/${user.id}/password`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -98,7 +97,7 @@ function ResolverSettings({ user, onSettingsUpdate }) {
   };
 
   return (
-    <div className="dashboard-main">
+    <div className="admin-main">
       <div className="dashboard-header">
         <h1>Settings</h1>
         <p>Manage your account settings and preferences</p>
@@ -155,6 +154,16 @@ function ResolverSettings({ user, onSettingsUpdate }) {
                 <label htmlFor="confirmPassword">Confirm New Password</label>
                 <input type="password" id="confirmPassword" name="confirmPassword" value={pwdData.confirmPassword} onChange={handlePasswordChange} className="form-input" required />
               </div>
+
+              <div className="password-tips">
+                <h4>Password Guidelines</h4>
+                <ul>
+                  <li>Use at least 8 characters</li>
+                  <li>Include uppercase and lowercase letters</li>
+                  <li>Include numbers and special characters (e.g., @, #, $)</li>
+                  <li>Avoid using common words or personal information</li>
+                </ul>
+              </div>
             </div>
 
             <div className="form-actions">
@@ -169,18 +178,20 @@ function ResolverSettings({ user, onSettingsUpdate }) {
             <div className="settings-section">
               <h3>Profile Picture</h3>
               <div className="photo-upload">
-                {formData.photo ? (
-                  <img src={formData.photo} alt="Profile" className="profile-preview" />
-                ) : (
-                  <div className="avatar-placeholder">🔧</div>
+                {formData.photo && (
+                  <img src={formData.photo} alt="Profile" className="photo-preview" />
                 )}
                 <div className="upload-controls">
                   <label htmlFor="photo-input" className="upload-label">Choose Photo</label>
                   <input type="file" id="photo-input" name="photo" accept="image/*" onChange={handlePhotoChange} className="photo-input" />
-                  <p className="upload-hint">Recommended: 200x200px, PNG or JPG</p>
-                  <div style={{ marginTop: 12 }}>
+                  <small className="upload-hint">Recommended: 200x200px, PNG or JPG, Max size: 2MB</small>
+                  <div style={{ marginTop: 20 }}>
                     <button className="btn-primary" onClick={async (e) => {
                       e.preventDefault();
+                      if (!formData.photo) {
+                        setMessage("Please select a photo first.");
+                        return;
+                      }
                       setLoading(true);
                       setMessage("");
                       try {
@@ -191,7 +202,7 @@ function ResolverSettings({ user, onSettingsUpdate }) {
                         });
                         if (res.ok) {
                           const updatedUser = await res.json();
-                          setMessage("Photo updated.");
+                          setMessage("Photo updated successfully!");
                           localStorage.setItem("user", JSON.stringify(updatedUser.user || updatedUser));
                           onSettingsUpdate(updatedUser.user || updatedUser);
                           setTimeout(() => setMessage(""), 2500);
@@ -207,9 +218,19 @@ function ResolverSettings({ user, onSettingsUpdate }) {
                     }}>{loading ? "Saving..." : "Upload Photo"}</button>
                   </div>
                 </div>
+
+                <div className="photo-guidelines">
+                  <h4>Photo Guidelines</h4>
+                  <ul>
+                    <li>Use a clear, professional photo</li>
+                    <li>Ensure your face is clearly visible</li>
+                    <li>Use neutral background</li>
+                    <li>Supported formats: JPG, PNG, GIF, WebP</li>
+                  </ul>
+                </div>
               </div>
             </div>
-            {message && <div className={`message ${message.includes("success") ? "success-message" : "error-message"}`}>{message}</div>}
+            {message && <div className={`message ${message.includes("success") ? "success-message" : "error-message"}`} style={{ marginTop: 20 }}>{message}</div>}
           </div>
         )}
       </div>
@@ -217,4 +238,4 @@ function ResolverSettings({ user, onSettingsUpdate }) {
   );
 }
 
-export default ResolverSettings;
+export default AdminSettings;
