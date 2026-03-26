@@ -7,7 +7,7 @@ import "./index.css";
 // 1) Prefer explicit Netlify env var VITE_API_URL
 // 2) Auto-resolve for deployed frontend domain
 // 3) Fallback to localhost for local development
-const deployedBackend = "https://<YOUR_BACKEND_URL>"; // << CHANGE THIS to your real backend URL
+const deployedBackend = "https://compilancesystem-api.onrender.com"; // << your backend URL
 const isProdNetlify = window.location.hostname.includes("netlify.app") || window.location.hostname.includes("appspot.com");
 
 export const API_BASE =
